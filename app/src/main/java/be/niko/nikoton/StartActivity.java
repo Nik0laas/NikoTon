@@ -69,7 +69,7 @@ public class StartActivity extends AppCompatActivity {
         switch(requestCode)
         {
             case 400:
-                if(resultCode == RESULT_OK)
+                if(resultCode == 0)
                 {
                     handleSigninIntent(data);
                 }
