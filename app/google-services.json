@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "868733980552",
+    "project_id": "trainton",
+    "storage_bucket": "trainton.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868733980552:android:543fbfb46e50729450343d",
+        "android_client_info": {
+          "package_name": "be.niko.nikoton"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868733980552-gle2vbqbroqmh8pvb16sgf5bmc1gf986.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "be.niko.nikoton",
+            "certificate_hash": "75248cd66836ef4647030eb78f13f7150c9f5954"
+          }
+        },
+        {
+          "client_id": "868733980552-6363b1undbshhk1d878vjn87gllmuh83.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL_aUf6vs2KCkxOlAo5ENmk6uaXhzHceo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868733980552-6363b1undbshhk1d878vjn87gllmuh83.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
