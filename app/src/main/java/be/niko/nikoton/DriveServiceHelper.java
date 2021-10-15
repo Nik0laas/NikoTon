@@ -31,6 +31,7 @@ import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.AbstractInputStreamContent;
 import com.google.api.client.http.ByteArrayContent;
@@ -104,6 +105,7 @@ public class DriveServiceHelper {
     public static String EXPORT_TYPE_OPEN_OFFICE_PRESENTATION = "application/vnd.oasis.opendocument.presentation";
     public static String EXPORT_TYPE_JSON = "application/vnd.google-apps.script+json";
 
+    static final int REQUEST_AUTHORIZATION = 2;
 
     public DriveServiceHelper(Drive driveService) {
 
@@ -416,20 +418,25 @@ public class DriveServiceHelper {
         return Tasks.call(mExecutor, new Callable<List<GoogleDriveFileHolder>>() {
             @Override
             public List<GoogleDriveFileHolder> call() throws Exception {
-                List<GoogleDriveFileHolder> googleDriveFileHolderList = new ArrayList<>();
-                // Retrive the metadata as a File object.
-                FileList result = mDriveService.files().list()
-                        .setQ("mimeType = '" + DriveFolder.MIME_TYPE + "' and name = '" + folderName + "' ")
-                        .setSpaces("drive")
-                        .execute();
+                List<GoogleDriveFileHolder> googleDriveFileHolderList = null;
+                try {
+                    googleDriveFileHolderList = new ArrayList<>();
+                    // Retrieve the metadata as a File object.
+                    FileList result = mDriveService.files().list()
+                            //.setQ("mimeType='image/jpeg' AND 'IMP' in parents")
+                            .setSpaces("drive")
+                            .execute();
 
-                for (int i = 0; i < result.getFiles().size(); i++) {
+                    for (int i = 0; i < result.getFiles().size(); i++) {
 
-                    GoogleDriveFileHolder googleDriveFileHolder = new GoogleDriveFileHolder();
-                    googleDriveFileHolder.setId(result.getFiles().get(i).getId());
-                    googleDriveFileHolder.setName(result.getFiles().get(i).getName());
+                        GoogleDriveFileHolder googleDriveFileHolder = new GoogleDriveFileHolder();
+                        googleDriveFileHolder.setId(result.getFiles().get(i).getId());
+                        googleDriveFileHolder.setName(result.getFiles().get(i).getName());
 
-                    googleDriveFileHolderList.add(googleDriveFileHolder);
+                        googleDriveFileHolderList.add(googleDriveFileHolder);
+                    }
+                } catch (UserRecoverableAuthIOException e) {
+                    //startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
                 }
 
                 return googleDriveFileHolderList;

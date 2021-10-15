@@ -32,7 +32,7 @@ public class LaatsteTest {
     // * If modifying these scopes, delete your previously saved tokens/ folder.
 
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_METADATA_READONLY);
-    private static final String CREDENTIALS_FILE_PATH = "C:/Users/NH/AndroidStudioProjects/NikoTon/app/src/main/Resources/conf/cred_nikoton.json";
+    private static final String CREDENTIALS_FILE_PATH = "C:/Users/NH/AndroidStudioProjects/NikoTon/app/src/practice/Resources/conf/cred_nikoton.json";
 
     // * Creates an authorized Credential object.
 // * @param HTTP_TRANSPORT The network HTTP Transport.

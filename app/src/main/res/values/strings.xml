@@ -1,4 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">NikoTon</string>
     <string name="client_id">868733980552-a8muv4nvh8subcm8nol00s9adp55cvng.apps.googleusercontent.com</string>
+    <string name="s_o">Afmelden</string>
+    <string name="b_m">Terug naar main</string>
+    <string name="main_sub">Welkom! Wat wil je vandaag doen?</string>
+    <string name="pract_sub">Welk stuk wil je oefenen? </string>
+    <string name="play_role">Welke rol speel je?</string>"
+    <string name="btn_oefn">Oefenen</string>
+    <string name="btn_imp">Importeren</string>
+    <string name="hard_1">Toneeltext</string>
 </resources>

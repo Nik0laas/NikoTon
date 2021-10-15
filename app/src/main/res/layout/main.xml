@@ -3,109 +3,63 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="be.niko.nikoton.MainActivity">
-
-    <Button
-        android:id="@+id/play5"
-        android:layout_width="248dp"
-        android:layout_height="66dp"
-        android:layout_marginTop="18dp"
-        android:text="Button"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/play4" />
-
-    <Button
-        android:id="@+id/play6"
-        android:layout_width="248dp"
-        android:layout_height="66dp"
-        android:layout_marginTop="17dp"
-        android:layout_marginBottom="3dp"
-        android:text="Button"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/buttonLogout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/play5" />
+    android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/txtvw_title"
-        android:layout_width="286dp"
-        android:layout_height="98dp"
-        android:layout_marginTop="36dp"
-        android:text="TonNik"
+        android:id="@+id/title6"
+        android:layout_width="334dp"
+        android:layout_height="89dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/app_name"
         android:textAlignment="center"
         android:textColor="#912F2F"
         android:textSize="80sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView4"
-        android:layout_width="275dp"
-        android:layout_height="43dp"
-        android:text="Welk stuk wil je oefenen? "
+        android:id="@+id/subTitle6"
+        android:layout_width="277dp"
+        android:layout_height="94dp"
+        android:text="@string/main_sub"
         android:textAlignment="center"
         android:textColor="#655D5D"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.433"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtvw_title" />
+        app:layout_constraintTop_toBottomOf="@+id/title6" />
 
     <Button
-        android:id="@+id/play1"
-        android:layout_width="248dp"
-        android:layout_height="66dp"
-        android:layout_marginTop="16dp"
-        android:text="Button"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
-
-    <Button
-        android:id="@+id/play4"
-        android:layout_width="248dp"
-        android:layout_height="66dp"
-        android:layout_marginTop="16dp"
-        android:text="Button"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/play3" />
-
-    <Button
-        android:id="@+id/play2"
-        android:layout_width="248dp"
-        android:layout_height="66dp"
-        android:layout_marginTop="15dp"
-        android:text="Button"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/play1" />
-
-    <Button
-        android:id="@+id/play3"
-        android:layout_width="248dp"
-        android:layout_height="66dp"
-        android:layout_marginTop="17dp"
-        android:text="Button"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/play2" />
-
-    <Button
-        android:id="@+id/buttonLogout"
+        android:id="@+id/buttonImport"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="Afmelden"
+        android:layout_marginTop="48dp"
+        android:text="@string/btn_imp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonPractice" />
+
+    <Button
+        android:id="@+id/buttonPractice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="104dp"
+        android:text="@string/btn_oefn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/subTitle6" />
+
+    <Button
+        android:id="@+id/buttonLogout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/s_o"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
