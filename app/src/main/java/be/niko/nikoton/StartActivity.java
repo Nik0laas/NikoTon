@@ -125,16 +125,17 @@ public class StartActivity extends AppCompatActivity {
 
     private void retrievePlayList() {
         if(g_driveServ == null) {
-            GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(StartActivity.this, Collections.singleton(DriveScopes.DRIVE_FILE));
+            GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Collections.singleton(DriveScopes.DRIVE));
 
             credential.setSelectedAccount(GoogleSignInAccount.createDefault().getAccount());
 
-            g_driveServ = new Drive.Builder(
-                    AndroidHttp.newCompatibleTransport(),
-                    new GsonFactory(),
-                    credential)
-                    .setApplicationName("NikoTon")
-                    .build();
+
+                g_driveServ = new Drive.Builder(
+                        AndroidHttp.newCompatibleTransport(),
+                        new GsonFactory(),
+                        credential)
+                        .setApplicationName("NikoTon")
+                        .build();
         }
 
         goToMain();

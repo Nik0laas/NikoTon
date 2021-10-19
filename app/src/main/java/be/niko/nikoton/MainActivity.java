@@ -27,14 +27,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.buttonLogout).setOnClickListener(this);
 
+
         Drive.About ab = Globals.g_driveServ.about();
         DriveServiceHelper driveHelp = new DriveServiceHelper(Globals.g_driveServ);
-        driveHelp.searchFolder("Toneel")
+
+
+            driveHelp.listChildrenFolder("Toneel");
+        /*driveHelp.searchFolder("Toneel")
                 .addOnSuccessListener(this::onSuccess)
                 .addOnFailureListener(this::onFail);
         /*driveHelp.queryFiles("IMP")
                 .addOnSuccessListener(this::onSuccess)
                 .addOnFailureListener(e -> c_googleDrivePlayHolder = null);*/
+    }
+
+    protected static void addPlayBtns(String filenames){
+
     }
 
     private void signOut() {

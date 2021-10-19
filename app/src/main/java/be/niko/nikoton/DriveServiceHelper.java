@@ -22,10 +22,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.util.Pair;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.tasks.Task;
@@ -64,7 +68,7 @@ import javax.annotation.Nullable;
  * A utility for performing read/write operations on Drive files via the REST API and opening a
  * file picker UI via Storage Access Framework.
  */
-public class DriveServiceHelper {
+public class DriveServiceHelper extends AppCompatActivity {
     private final Executor mExecutor = Executors.newSingleThreadExecutor();
     private final Drive mDriveService;
 
@@ -105,11 +109,49 @@ public class DriveServiceHelper {
     public static String EXPORT_TYPE_OPEN_OFFICE_PRESENTATION = "application/vnd.oasis.opendocument.presentation";
     public static String EXPORT_TYPE_JSON = "application/vnd.google-apps.script+json";
 
-    static final int REQUEST_AUTHORIZATION = 2;
+    private static final int REQ_ONE_TAP = 2;
 
-    public DriveServiceHelper(Drive driveService) {
+     public DriveServiceHelper(Drive driveService) {
 
         mDriveService = driveService;
+    }
+
+    public void listChildrenFolder(String folder) {
+        final String[] children = null;
+
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+
+            @Override
+            protected String doInBackground(Void... params) {
+                String fileQuery = "'" + folder + "' in parents and trashed=false";
+                FileList files = null;
+                try {
+                    files = mDriveService.files().list().setQ( fileQuery ).execute();
+
+                } catch (IOException e) {
+                    if(e.getCause() instanceof UserRecoverableAuthException) {
+                        // Start the user recoverable action using the intent returned by
+                        // getIntent()
+                        //
+                        Intent intent = ((UserRecoverableAuthException) e.getCause()).getIntent();
+                        startActivityForResult(intent, REQ_ONE_TAP);
+                    }
+                }
+                String filenames = "";
+                for ( File file : files.getFiles() ) {
+                    filenames += file.getName() + ";";
+                    //filenames.add( file.getName() );
+                }
+                return filenames;
+            }
+
+            @Override
+            protected void onPostExecute(String filenames) {
+                MainActivity.addPlayBtns(filenames);
+            }
+
+        };
+        task.execute();
     }
 
     public static Drive getGoogleDriveService(Context context, GoogleSignInAccount account, String appName) throws GeneralSecurityException, IOException {
