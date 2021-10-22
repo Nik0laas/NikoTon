@@ -109,7 +109,7 @@ public class DriveServiceHelper extends AppCompatActivity {
     public static String EXPORT_TYPE_OPEN_OFFICE_PRESENTATION = "application/vnd.oasis.opendocument.presentation";
     public static String EXPORT_TYPE_JSON = "application/vnd.google-apps.script+json";
 
-    private static final int REQ_ONE_TAP = 2;
+    private static final int REQ_ONE_TAP = 1001;
 
      public DriveServiceHelper(Drive driveService) {
 
@@ -126,7 +126,7 @@ public class DriveServiceHelper extends AppCompatActivity {
                 String fileQuery = "'" + folder + "' in parents and trashed=false";
                 FileList files = null;
                 try {
-                    files = mDriveService.files().list().setQ( fileQuery ).execute();
+                    files = mDriveService.files().list().execute(); //.setQ( fileQuery )
 
                 } catch (IOException e) {
                     if(e.getCause() instanceof UserRecoverableAuthException) {

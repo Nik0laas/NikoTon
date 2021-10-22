@@ -1,14 +1,17 @@
 package be.niko.nikoton;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.identity.BeginSignInRequest;
+import com.google.android.gms.auth.api.identity.Identity;
+import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -18,13 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-
-import java.util.Collections;
 
 import javax.annotation.Nullable;
 
@@ -34,7 +31,11 @@ public class StartActivity extends AppCompatActivity {
 
     Button signin,signout;
     private static final int RC_SIGN_IN = 9001;
+    private static final int REQUEST_CODE_SIGN_IN = 1;
     private static final int REQ_ONE_TAP = 2;
+    private SignInClient oneTapClient;
+    private BeginSignInRequest signInRequest;
+    private static final String TAG = "drive-quickstart";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,24 +57,21 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private void signInClick () {
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-        if (acct != null) {
-            String personName = acct.getDisplayName();
-            String personGivenName = acct.getGivenName();
-            String personFamilyName = acct.getFamilyName();
-            String personEmail = acct.getEmail();
-            String personId = acct.getId();
-            Uri personPhoto = acct.getPhotoUrl();
-            retrievePlayList();
-        }else{
-                GoogleSignInOptions SIopts = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        //.requestEmail()
-                        .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
-                        .build();
-                GoogleSignInClient client = GoogleSignIn.getClient(this, SIopts);
-
-                startActivityForResult(client.getSignInIntent(), 400);
-        }
+        oneTapClient = Identity.getSignInClient(this);
+        signInRequest = BeginSignInRequest.builder()
+                .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
+                        .setSupported(true)
+                        .build())
+                .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                        .setSupported(true)
+                        // Your server's client ID, not your Android client ID.
+                        .setServerClientId(getString(R.string.default_web_client_id))
+                        // Only show accounts previously used to sign in.
+                        .setFilterByAuthorizedAccounts(true)
+                        .build())
+                // Automatically sign in when exactly one credential is retrieved.
+                .setAutoSelectEnabled(true)
+                .build();
     }
 
     private void signOutClick () {
@@ -91,51 +89,17 @@ public class StartActivity extends AppCompatActivity {
                 });
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
-
-        switch(requestCode)
-        {
-            case 400:
-                if(resultCode == 0)
-                {
-                    handleSigninIntent(data);
-                }
-                break;
-        }
-    }
-
-    public void handleSigninIntent(Intent data)
-    {
-        GoogleSignIn.getSignedInAccountFromIntent(data)
-                .addOnSuccessListener(new OnSuccessListener<GoogleSignInAccount>() {
-                    @Override
-                    public void onSuccess(GoogleSignInAccount googleSignInAccount) {
-                        Globals.g_driveServiceHelper = new DriveServiceHelper(g_driveServ);
-                        retrievePlayList();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull @org.jetbrains.annotations.NotNull Exception e) {
-
-                    }
-                });
-    }
-
     private void retrievePlayList() {
         if(g_driveServ == null) {
-            GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Collections.singleton(DriveScopes.DRIVE));
+            Log.i(TAG, "Start sign in");
+            GoogleSignInOptions signInOptions =
+                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
+                            .requestEmail()
+                            .build();
+            mGoogleSignInClient = GoogleSignIn.getClient(this, signInOptions);
+            startActivityForResult(mGoogleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN);
 
-            credential.setSelectedAccount(GoogleSignInAccount.createDefault().getAccount());
-
-
-                g_driveServ = new Drive.Builder(
-                        AndroidHttp.newCompatibleTransport(),
-                        new GsonFactory(),
-                        credential)
-                        .setApplicationName("NikoTon")
-                        .build();
         }
 
         goToMain();
