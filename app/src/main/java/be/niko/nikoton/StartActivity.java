@@ -13,17 +13,12 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.services.drive.DriveScopes;
-
-import javax.annotation.Nullable;
 
 import static be.niko.nikoton.Globals.g_driveServ;
 
@@ -36,6 +31,7 @@ public class StartActivity extends AppCompatActivity {
     private SignInClient oneTapClient;
     private BeginSignInRequest signInRequest;
     private static final String TAG = "drive-quickstart";
+    public GoogleSignInClient g_client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +75,8 @@ public class StartActivity extends AppCompatActivity {
                 .requestEmail()
                 .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
                 .build();
-        GoogleSignInClient client = GoogleSignIn.getClient(this, SIopts);
-        client.signOut()
+        g_client = GoogleSignIn.getClient(this, SIopts);
+        g_client.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -97,8 +93,8 @@ public class StartActivity extends AppCompatActivity {
                             .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
                             .requestEmail()
                             .build();
-            mGoogleSignInClient = GoogleSignIn.getClient(this, signInOptions);
-            startActivityForResult(mGoogleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN);
+            g_client = GoogleSignIn.getClient(this, signInOptions);
+            startActivityForResult(g_client.getSignInIntent(), REQUEST_CODE_SIGN_IN);
 
         }
 
