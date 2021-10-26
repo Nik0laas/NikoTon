@@ -6,10 +6,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.IntentSenderRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
+import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -17,8 +21,28 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 
 import static be.niko.nikoton.Globals.g_driveServ;
 
@@ -68,6 +92,22 @@ public class StartActivity extends AppCompatActivity {
                 // Automatically sign in when exactly one credential is retrieved.
                 .setAutoSelectEnabled(true)
                 .build();
+
+        oneTapClient.beginSignIn(signInRequest)
+                .addOnSuccessListener(this, new OnSuccessListener<BeginSignInResult>() {
+                    @Override
+                    public void onSuccess(BeginSignInResult result) {
+                       loginResultHandler.launch(new IntentSenderRequest.Builder(result.getPendingIntent().getIntentSender()).build());
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // No saved credentials found. Launch the One Tap sign-up flow, or
+                        // do nothing and continue presenting the signed-out UI.
+                        Log.d(TAG, e.getLocalizedMessage());
+                    }
+                });
     }
 
     private void signOutClick () {
@@ -85,21 +125,56 @@ public class StartActivity extends AppCompatActivity {
                 });
     }
 
-    private void retrievePlayList() {
+    private void retrievePlayList() throws GeneralSecurityException, IOException {
         if(g_driveServ == null) {
-            Log.i(TAG, "Start sign in");
-            GoogleSignInOptions signInOptions =
-                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
-                            .requestEmail()
-                            .build();
-            g_client = GoogleSignIn.getClient(this, signInOptions);
-            startActivityForResult(g_client.getSignInIntent(), REQUEST_CODE_SIGN_IN);
-
+            final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+            g_driveServ = new Drive.Builder(HTTP_TRANSPORT, Globals.JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                    .setApplicationName(Globals.APP_NAME)
+                    .build();
         }
 
         goToMain();
     }
+
+    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+        // Load client secrets.
+        InputStream in = StartActivity.class.getResourceAsStream(Globals.CREDENTIALS_FILE_PATH);
+        if (in == null) {
+            throw new FileNotFoundException("Resource not found: " + Globals.CREDENTIALS_FILE_PATH);
+        }
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(Globals.JSON_FACTORY, new InputStreamReader(in));
+
+        // Build flow and trigger user authorization request.
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+                HTTP_TRANSPORT, Globals.JSON_FACTORY, clientSecrets, Collections.singleton(DriveScopes.DRIVE))
+                .setDataStoreFactory(new FileDataStoreFactory(new File(getRelPath(Globals.CREDENTIALS_FILE_PATH))))
+                .setAccessType("offline")
+                .build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+    }
+
+    public static String getRelPath(String abs_path) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL url = classLoader.getResource("abs_path");
+        return url.toString();
+    }
+
+    private ActivityResultLauncher<IntentSenderRequest> loginResultHandler = registerForActivityResult(new ActivityResultContracts.StartIntentSenderForResult(), result -> {
+        // handle intent result here
+        if (result.getResultCode() == RESULT_OK) {
+            try {
+                retrievePlayList();
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            //...
+        }
+    });
 
     public void goToMain() {
         Intent intent = new Intent(this, MainActivity.class);
