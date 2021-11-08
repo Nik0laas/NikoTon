@@ -25,9 +25,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -35,14 +32,11 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
 
 import static be.niko.nikoton.Globals.g_driveServ;
 
@@ -85,7 +79,7 @@ public class StartActivity extends AppCompatActivity {
                 .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                         .setSupported(true)
                         // Your server's client ID, not your Android client ID.
-                        .setServerClientId(getString(R.string.default_web_client_id))
+                        .setServerClientId("868733980552-a8muv4nvh8subcm8nol00s9adp55cvng.apps.googleusercontent.com")
                         // Only show accounts previously used to sign in.
                         .setFilterByAuthorizedAccounts(true)
                         .build())
@@ -144,19 +138,28 @@ public class StartActivity extends AppCompatActivity {
         }
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(Globals.JSON_FACTORY, new InputStreamReader(in));
 
+        java.io.File DATA_STORE_DIR = new java.io.File("tokens");
+        FileDataStoreFactory DATA_STORE_FACTORY;
+        getRelPath("test");
+        DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
+
         // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+        /*GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 HTTP_TRANSPORT, Globals.JSON_FACTORY, clientSecrets, Collections.singleton(DriveScopes.DRIVE))
-                .setDataStoreFactory(new FileDataStoreFactory(new File(getRelPath(Globals.CREDENTIALS_FILE_PATH))))
+                .setDataStoreFactory(dstfact)
                 .setAccessType("offline")
                 .build();
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");*/
+        return null;
     }
 
     public static String getRelPath(String abs_path) {
+        GDrive.class.getClassLoader().getResourceAsStream("floodlightdefault.properties");
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL url = classLoader.getResource("abs_path");
+        String url = classLoader.getResource(".").getPath();
+
+
         return url.toString();
     }
 
