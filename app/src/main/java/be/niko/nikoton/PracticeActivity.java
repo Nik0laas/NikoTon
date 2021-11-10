@@ -9,13 +9,13 @@ public class PracticeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String playText = getIntent().getExtras().getString("Play");
-        String[] roles = read_roles(playText);
+        String playID = getIntent().getExtras().getString("PlayID");
+        String[] roles = read_roles(playID);
         setContentView(R.layout.roles);
     }
 
-    String[] read_roles(String playTitle) {
-
+    String[] read_roles(String playID) {
+        String playCont = Globals.g_driveServ.readPlay(playID);
         return new String[0];
     }
 }

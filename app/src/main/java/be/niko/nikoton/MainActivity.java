@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button[] m_buttons;
@@ -17,8 +19,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
 
+        setContentView(R.layout.main);
+        Globals.g_driveServ = new GDrive();
         findViewById(R.id.buttonPractice).setOnClickListener(this);
         findViewById(R.id.buttonImport).setOnClickListener(this);
     }
@@ -38,21 +41,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 TextView tv1 = (TextView)findViewById(R.id.subTitle);
                 tv1.setText("Welke bestand wil je importeren?");
 
-                String[] plays = Globals.g_driveServ.importPlays();
-                for(int i = 0;i < plays.length - 1 && i < 7;i++) {
+                List<String[]> plays = Globals.g_driveServ.importPlays();
+                for(int i = 0;i < plays.size() - 1 && i < 7;i++) {
                     String rID = "play" + i + 1;
                     int playID = getResources().getIdentifier(rID, "id", getPackageName());
                     m_buttons[i] = (Button) findViewById(playID);
-                    m_buttons[i].setText(plays[i]);
+                    m_buttons[i].setText(plays.get(i)[1]);
                     m_buttons[i].setOnClickListener(this);
                 }
             } else {
+                List<String[]> plays = Globals.g_driveServ.importPlays();
                 for (int i = 0; i < m_buttons.length; i++) {
                     if (m_buttons[i].getId() == v.getId()) {
 
                         Intent intent = new Intent(MainActivity.this,
                                 PracticeActivity.class);
-                        intent.putExtra("Play",m_buttons[i].getText().toString());
+                        intent.putExtra("PlayID", plays.get(i)[1]);
                         startActivity(intent);
                     }
                 }

@@ -4,7 +4,6 @@ import android.content.Context;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.Task;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -23,13 +22,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class GDrive extends AppCompatActivity {
     private Context context;
     private static final String APPLICATION_NAME = "NIKOTON";
-    private static final String TOKENS_DIRECTORY_PATH = "TOKENS";
+    private static final String TOKENS_DIRECTORY_PATH = "tokens";
     private NetHttpTransport httptrans;
     private Drive service;
 
@@ -71,8 +71,8 @@ public class GDrive extends AppCompatActivity {
 
     }
 
-    public String[] importPlays() {
-        Task<List<GoogleDriveFileHolder>> googleDriveFilePlays;
+    public List<String[]> importPlays() {
+        List<String[]> plays = null;
 
         try {
             FileList result = service.files().list()
@@ -84,15 +84,32 @@ public class GDrive extends AppCompatActivity {
             if (files == null || files.isEmpty()) {
                 System.out.println("No files found.");
             } else {
-                System.out.println("Files:");
+                plays = new ArrayList<String[]>();
+
                 for (File file : files) {
-                    System.out.printf("%s (%s)\n", file.getName(), file.getId());
+                    plays.add(new String[] { file.getId(), file.getName() });
                 }
             }
         } catch (IOException ioE) {
-
         }
 
-       return new String[]{"E", "R"};
+       return plays;
     }
+
+    public String readPlay(String fileID) {
+        try {
+            File result = service.files().get(fileID)
+                    .execute();
+            if (result== null) {
+                System.out.println("No file found.");
+            } else {
+
+            }
+        } catch (IOException ioE) {
+        }
+
+        return "";
+    }
+
+
 }
