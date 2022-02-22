@@ -1,8 +1,11 @@
-package be.niko.nikoton;
+package be.niko.nikoton.andrFirst;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import be.niko.nikoton.R;
+import be.niko.nikoton.laatsteTest.Global;
 
 public class PracticeActivity extends AppCompatActivity {
     @Override
@@ -15,7 +18,7 @@ public class PracticeActivity extends AppCompatActivity {
     }
 
     String[] read_roles(String playID) {
-        String playCont = Globals.g_driveServ.readPlay(playID);
+        String playCont = Global.g_driveServ.readPlay(playID);
         return new String[0];
     }
 }
